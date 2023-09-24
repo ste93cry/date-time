@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Brick\DateTime;
 
+use Brick\DateTime\Field\NanoOfSecond;
+use Brick\DateTime\Parser\DateTimeParseException;
+use Brick\DateTime\Parser\DateTimeParseResult;
+use Brick\DateTime\Parser\IsoParsers;
+
 /**
  * Represents a point in time, with a nanosecond precision.
  *
@@ -66,6 +71,33 @@ final class Instant implements \JsonSerializable
         }
 
         return new Instant($epochSecond, $nanos);
+    }
+
+    /**
+     * Obtains an instance of `Instant` from a set of date-time fields.
+     *
+     * This method is only useful to parsers.
+     *
+     * @throws DateTimeParseException If required fields are missing from the result.
+     */
+    public static function from(DateTimeParseResult $result) : Instant
+    {
+        $instantSeconds = (int) $result->getField();
+        $nanoOfSecond = (int) $result->getField(NanoOfSecond::NAME);
+
+        return self::of($instantSeconds, $nanoOfSecond);
+    }
+
+    /**
+     * Obtains an instance of `Instant` from a text string such as `2007-12-03T10:15:30.00Z`.
+     * The string must represent a valid instant in UTC and is parsed using
+     * {@see IsoParsers::offsetDateTime()}.
+     *
+     * @param string $text The text to parse
+     */
+    public static function parse(string $text) : Instant
+    {
+        return self::from(IsoParsers::offsetDateTime()->parse($text));
     }
 
     public static function epoch() : Instant

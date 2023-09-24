@@ -45,6 +45,23 @@ class InstantTest extends AbstractTestCase
         ];
     }
 
+    /**
+     * @dataProvider providerParse
+     */
+    public function testParse(string $text, int $expectedSeconds, int $expectedNanos): void
+    {
+        $result = Instant::parse($text);
+
+        $this->assertInstantIs($expectedSeconds, $expectedNanos, $result);
+    }
+
+    public function providerParse(): array
+    {
+        return [
+
+        ];
+    }
+
     public function testEpoch(): void
     {
         $this->assertInstantIs(0, 0, Instant::epoch());
